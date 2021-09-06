@@ -1,0 +1,313 @@
+ENDPOINT: https://mazerunnerapi.azurewebsites.net/api/
+    
+    ¡¡ IMPORTANT ¡¡
+    for security reasons, all requests must have the parameter code at the end of the query, example:	
+    https://mazerunnerapi.azurewebsites.net/api/Maze?code=CTLH2JGw02ntEMlwXANzIegaNFGi/vSE34NSvgar5WYFb1x349z8jw==
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Step 1) Create a new Maze
+
+[POST] https://mazerunnerapi.azurewebsites.net/api/Maze
+
+Body request example (json):
+{
+    Width:15,
+    Height:15
+}
+
+Width and Height represents the size of the maze. The range accepted is 5-150
+
+Response example:
+
+{
+    "mazeUid": "4e029a62-ec89-4ce3-a05f-19d553f5e000",
+    "height": 15,
+    "width": 15
+}
+
+The mazeUid is needed for the next step
+
+Step 2) Create a new game
+
+[POST] https://mazerunnerapi.azurewebsites.net/api/Game/{mazeUid}
+
+Body request example (json):
+
+{
+    Operation:"Start"
+}
+
+Response example:
+
+{
+    "mazeUid": "4e029a62-ec89-4ce3-a05f-19d553f5e000",
+    "gameUid": "101ada35-6b81-4ef3-be36-ee38ae754000",
+    "completed": false,
+    "currentPositionX": 0,
+    "currentPositionY": 0
+}
+
+With this call we are starting a new game inside the maze specified. You will nedd gameUid for the next step
+
+Step 3) Take a look
+
+[GET] https://mazerunnerapi.azurewebsites.net/api/Game/{mazeUid}/{gameUid}
+
+Response example:
+
+{
+    "game": {
+        "mazeUid": "4e029a62-ec89-4ce3-a05f-19d553f5ec80",
+        "gameUid": "f203e09c-4603-46b5-8cd5-04b9aa3805c4",
+        "completed": false,
+        "currentPositionX": 4,
+        "currentPositionY": 0
+    },
+    "mazeBlockView": {
+        "coordX": 4,
+        "coordY": 0,
+        "northBlocked": true,
+        "southBlocked": true,
+        "westBlocked": false,
+        "eastBlocked": false
+    }
+}
+
+With this call, you can see:
+- if the game is completed because you reach the end of the maze 
+  (the end of the maze is always where the coord x and y are equal to the width-1 and height-1 of the created maze)
+- your current coordenades (the game always starts at 0,0)
+- If north, south, west  or east is blocked
+  
+Maze representation:  
+
+|------------------|
+|   x->            |    
+| y 0,0         9,0|     
+| |                |
+| ^       north    |
+|       west east  | 
+|         south    |
+|                  |
+|                  |
+|                  |
+|  9,0         9,9 |         
+|------------------|  
+  note: if you go to the south -> y+1 
+        if you go to the east  -> x+1
+		
+
+Step 4) Move next cell
+
+[POST] https://mazerunnerapi.azurewebsites.net/api/Game/{mazeUid}/{gameUid}
+
+Body request example (json):
+
+{
+    Operation:"GoEast"
+}
+
+Response example:
+
+{
+    "game": {
+        "mazeUid": "4e029a62-ec89-4ce3-a05f-19d553f5e000",
+        "gameUid": "f203e09c-4603-46b5-8cd5-04b9aa380000",
+        "completed": false,
+        "currentPositionX": 4,
+        "currentPositionY": 0
+    },
+    "mazeBlockView": {
+        "coordX": 4,
+        "coordY": 0,
+        "northBlocked": true,
+        "southBlocked": true,
+        "westBlocked": false,
+        "eastBlocked": false
+    }
+}
+
+Operation can have the next values:
+	"GoNorth"
+    "GoSouth"
+    "GoEast"
+    "GoWest"
+	
+If you try to go to a blocked direction, an error will be returned, dont try it.
+
+Step 5) Reset the game
+
+[POST] https://mazerunnerapi.azurewebsites.net/api/Game/{mazeUid}/{gameUid}
+
+Body request example (json):
+
+{
+    Operation:"Start"
+}
+
+Extra step) See maze information for debuging purpouses (dont use it, dont be a cheater)
+[GET] https://mazerunnerapi.azurewebsites.net/api/Maze/mazeUid
+
+Response example:
+
+{
+    "mazeUid": "4e029a62-ec89-4ce3-a05f-19d553f5ec80",
+    "width": 15,
+    "height": 15,
+    "blocks": [
+        {
+            "coordX": 0,
+            "coordY": 0,
+            "northBlocked": true,
+            "southBlocked": false,
+            "westBlocked": true,
+            "eastBlocked": false
+        },
+        {
+            "coordX": 1,
+            "coordY": 0,
+            "northBlocked": true,
+            "southBlocked": true,
+            "westBlocked": false,
+            "eastBlocked": false
+        }.......
+		
+		
+		
+EXAMPLE OF GAME SESSION
+------------------------
+
+// create a new random maze
+[POST] https://mazerunnerapi.azurewebsites.net/api/Maze?code=CTLH2JGw02ntEMlwXANzIegaNFGi/vSE34NSvgar5WYFb1x349z8jw==
+[BODY] 
+{
+    width:100,
+    height:100
+}
+[RESPONSE]
+{
+    "mazeUid": "8d6ce136-655b-48b7-ba4e-bd7b01004c90",
+    "height": 100,
+    "width": 100
+}
+
+// create a new game using the new maze
+[POST] https://mazerunnerapi.azurewebsites.net/api/Game/4e029a62-ec89-4ce3-a05f-19d553f5ec80?code=bINetL5Vm7pVuoPm/SXIMi9Niv3D9DxpPQ8tDPbsyJ0J4KZfSQl/yA==
+[BODY]
+{
+    Operation:"Start"
+}
+[RESPONSE]
+{
+    "mazeUid": "8d6ce136-655b-48b7-ba4e-bd7b01004c90",
+    "gameUid": "22a48db0-3296-4c0b-94f5-ca857d6ff26e",
+    "completed": false,
+    "currentPositionX": 0,
+    "currentPositionY": 0
+}
+
+// look around where you are
+[GET] https://mazerunnerapi.azurewebsites.net/api/Game/8d6ce136-655b-48b7-ba4e-bd7b01004c90/22a48db0-3296-4c0b-94f5-ca857d6ff26e?code=bINetL5Vm7pVuoPm/SXIMi9Niv3D9DxpPQ8tDPbsyJ0J4KZfSQl/yA==
+[RESPONSE]
+{
+    "game": {
+        "mazeUid": "8d6ce136-655b-48b7-ba4e-bd7b01004c90",
+        "gameUid": "22a48db0-3296-4c0b-94f5-ca857d6ff26e",
+        "completed": false,
+        "currentPositionX": 0,
+        "currentPositionY": 0
+    },
+    "mazeBlockView": {
+        "coordX": 0,
+        "coordY": 0,
+        "northBlocked": true,
+        "southBlocked": false,
+        "westBlocked": true,
+        "eastBlocked": false
+    }
+}
+
+// because north and west are blocked, we can go to the south or the east, lest go east.
+[POST] https://mazerunnerapi.azurewebsites.net/api/Game/8d6ce136-655b-48b7-ba4e-bd7b01004c90/22a48db0-3296-4c0b-94f5-ca857d6ff26e?code=bINetL5Vm7pVuoPm/SXIMi9Niv3D9DxpPQ8tDPbsyJ0J4KZfSQl/yA==
+[BODY]
+{
+    Operation:"GoEast"
+}
+[RESPONSE]
+{
+    "game": {
+        "mazeUid": "8d6ce136-655b-48b7-ba4e-bd7b01004c90",
+        "gameUid": "22a48db0-3296-4c0b-94f5-ca857d6ff26e",
+        "completed": false,
+        "currentPositionX": 1,
+        "currentPositionY": 0
+    },
+    "mazeBlockView": {
+        "coordX": 1,
+        "coordY": 0,
+        "northBlocked": true,
+        "southBlocked": false,
+        "westBlocked": false,
+        "eastBlocked": false
+    }
+}
+
+// try to "jump" the wall
+[POST] https://mazerunnerapi.azurewebsites.net/api/Game/8d6ce136-655b-48b7-ba4e-bd7b01004c90/22a48db0-3296-4c0b-94f5-ca857d6ff26e?code=bINetL5Vm7pVuoPm/SXIMi9Niv3D9DxpPQ8tDPbsyJ0J4KZfSQl/yA==
+[BODY]
+{
+    Operation:"GoNorth"
+}
+[RESPONSE]
+¡¡¡ERROR¡¡¡
+
+// go south
+[POST] https://mazerunnerapi.azurewebsites.net/api/Game/8d6ce136-655b-48b7-ba4e-bd7b01004c90/22a48db0-3296-4c0b-94f5-ca857d6ff26e?code=bINetL5Vm7pVuoPm/SXIMi9Niv3D9DxpPQ8tDPbsyJ0J4KZfSQl/yA==
+[BODY]
+{
+    Operation:"GoSouth"
+}
+[RESPONSE]
+{
+    "game": {
+        "mazeUid": "8d6ce136-655b-48b7-ba4e-bd7b01004c90",
+        "gameUid": "22a48db0-3296-4c0b-94f5-ca857d6ff26e",
+        "completed": false,
+        "currentPositionX": 1,
+        "currentPositionY": 1
+    },
+    "mazeBlockView": {
+        "coordX": 1,
+        "coordY": 1,
+        "northBlocked": false,
+        "southBlocked": false,
+        "westBlocked": true,
+        "eastBlocked": true
+    }
+}
+
+// go south
+[POST] https://mazerunnerapi.azurewebsites.net/api/Game/8d6ce136-655b-48b7-ba4e-bd7b01004c90/22a48db0-3296-4c0b-94f5-ca857d6ff26e?code=bINetL5Vm7pVuoPm/SXIMi9Niv3D9DxpPQ8tDPbsyJ0J4KZfSQl/yA==
+[BODY]
+{
+    Operation:"GoSouth"
+}
+[RESPONSE]
+{
+    "game": {
+        "mazeUid": "8d6ce136-655b-48b7-ba4e-bd7b01004c90",
+        "gameUid": "22a48db0-3296-4c0b-94f5-ca857d6ff26e",
+        "completed": false,
+        "currentPositionX": 1,
+        "currentPositionY": 2
+    },
+    "mazeBlockView": {
+        "coordX": 1,
+        "coordY": 2,
+        "northBlocked": false,
+        "southBlocked": true,
+        "westBlocked": false,
+        "eastBlocked": false
+    }
+}

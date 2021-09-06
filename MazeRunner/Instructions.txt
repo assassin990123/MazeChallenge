@@ -1,0 +1,28 @@
+THE MAZE CHALLENGE
+------------------
+
+There is an API where you can:
+
+- Generate mazes.
+- Start a game inside a previously generated maze.
+- Inside a game, move around the maze until you reach the end of the maze.
+(see APISpecs.txt for more info about the API)
+
+
+In this test you have to choose one of two options.
+
+- Make a console app where automatically (without user interaction):
+  - creates a maze of 25x25
+  - starts a game
+  - send movements to reach the end of the maze with some kind of clever algorithm.
+
+OR 
+
+- Make a user interface where the user can:
+  - generate a new maze, 
+  - start a game inside the maze 
+  - move around the maze using some kind of controls
+  - Graph some kind of map conform you are advancing in the maze.
+
+
+There is no restriction about the tools and libraries in case you need one. Good luck¡¡
