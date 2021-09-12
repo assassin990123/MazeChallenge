@@ -1,9 +1,0 @@
-{
-  "IsEncrypted": false,
-  "Values": {
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-    "BlobConnectionString": "DefaultEndpointsProtocol=https;AccountName=lendsumteststorage;AccountKey=xR/myHTlzOt7s2tPpz+f19ZlaXtoR+hotdlZC+HhEiBTvdiuZ785aH62SS9pc4zLD/tvs6H0qevaKxOr72xVZw==;EndpointSuffix=core.windows.net",
-     "BlobContainer": "maze"
-  }
-}
